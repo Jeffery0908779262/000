@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>G-Lens 租約風險辨識系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:   #1a73e8;
+    --blue-lt:#e8f0fe;
+    --blue-dk:#1557b0;
+    --green:  #34a853;
+    --green-lt:#e6f4ea;
+    --red:    #ea4335;
+    --red-lt: #fce8e6;
+    --yellow: #fbbc04;
+    --yellow-lt:#fef7e0;
+    --gray-1: #f8f9fa;
+    --gray-2: #f1f3f4;
+    --gray-3: #e8eaed;
+    --gray-4: #dadce0;
+    --gray-5: #9aa0a6;
+    --gray-6: #5f6368;
+    --gray-7: #3c4043;
+    --black:  #202124;
+    --white:  #ffffff;
+    --nav-h:  56px;
+    --btm-h:  60px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 24px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--white);
+    font-family: 'Roboto', 'Noto Sans TC', sans-serif;
+    color: var(--black);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-3);
+    display: flex; align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  .navbar-spacer { flex: 1; }
+
+  .nav-auth {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .btn-login {
+    font-family: 'Google Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    color: var(--blue);
+    background: transparent;
+    border: 1.5px solid var(--blue);
+    border-radius: 999px;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-login:hover { background: var(--blue-lt); }
+  .btn-login:active { background: #d2e3fc; }
+
+  .btn-register {
+    font-family: 'Google Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    border-radius: 999px;
+    padding: 7px 18px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(26,115,232,0.3);
+  }
+  .btn-register:hover { background: #1665d8; }
+  .btn-register:active { background: var(--blue-dk); }
+
+  .logo {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--blue);
+    letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 2px;
+  }
+  .logo-accent { color: var(--red); }
+
+  .lang-btn {
+    display: flex; gap: 2px;
+    background: var(--gray-2);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .lang-btn span {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--gray-6);
+    transition: background 0.15s, color 0.15s;
+  }
+  .lang-btn span.active {
+    background: var(--white);
+    color: var(--blue);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  /* ── MAIN ── */
+  main {
+    padding-top: var(--nav-h);
+    padding-bottom: calc(var(--btm-h) + 8px);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 32px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--blue-lt);
+    color: var(--blue-dk);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+
+  .hero-title {
+    font-family: 'Google Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    font-size: 1.7rem;
+    line-height: 1.25;
+    color: var(--black);
+    letter-spacing: -0.5px;
+  }
+  .hero-title span { color: var(--blue); }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    color: var(--gray-6);
+    line-height: 1.6;
+  }
+
+  /* Hero robot image */
+  .hero-illus {
+    width: 200px; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 4px 0;
+  }
+  .hero-illus img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px; background: var(--gray-3);
+    margin: 0 20px;
+  }
+
+  /* ── SECTION ── */
+  .section { padding: 24px 20px; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sec-title {
+    font-family: 'Google Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 1.5px dashed var(--blue);
+    border-radius: var(--radius-xl);
+    background: var(--blue-lt);
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .upload-zone:active { background: #d2e3fc; }
+
+  .upload-icon {
+    width: 56px; height: 56px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+  .upload-icon svg {
+    width: 26px; height: 26px;
+    stroke: var(--blue); fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .upload-title {
+    font-family: 'Google Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--black);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .upload-hint {
+    font-size: 0.78rem;
+    color: var(--gray-6);
+    text-align: center;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--blue);
+    color: var(--white);
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 11px 24px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    margin-top: 4px;
+    letter-spacing: 0.15px;
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .btn-primary:active {
+    background: var(--blue-dk);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  /* ── RISK DEMO ── */
+  .risk-card {
+    background: var(--white);
+    border: 1px solid var(--gray-3);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .risk-card-header {
+    background: var(--gray-1);
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    color: var(--gray-6);
+    font-weight: 500;
+    border-bottom: 1px solid var(--gray-3);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+  .risk-row {
+    display: flex; align-items: flex-start;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--gray-3);
+    gap: 10px;
+  }
+  .risk-row:last-child { border-bottom: none; }
+
+  .risk-clause {
+    font-size: 0.83rem;
+    color: var(--gray-7);
+    flex: 1;
+    line-height: 1.45;
+  }
+  .risk-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+  }
+  .badge-red    { background: var(--red-lt);    color: var(--red);    }
+  .badge-yellow { background: var(--yellow-lt); color: #b06000;       }
+  .badge-green  { background: var(--green-lt);  color: var(--green);  }
+
+  /* ── FEATURE LIST ── */
+  .feat-list { display: flex; flex-direction: column; gap: 0; }
+
+  .feat-item {
+    display: flex; align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-3);
+  }
+  .feat-item:last-child { border-bottom: none; }
+
+  .feat-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--radius);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.15rem;
+  }
+  .fi-blue   { background: var(--blue-lt); }
+  .fi-green  { background: var(--green-lt); }
+  .fi-yellow { background: var(--yellow-lt); }
+
+  .feat-text {}
+  .feat-title {
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--black);
+    margin-bottom: 2px;
+  }
+  .feat-desc {
+    font-size: 0.78rem;
+    color: var(--gray-6);
+    line-height: 1.5;
+  }
+
+  /* ── STEPS ── */
+  .step-list { display: flex; flex-direction: column; gap: 0; }
+  .step-item {
+    display: flex; gap: 14px;
+    padding: 14px 0;
+    position: relative;
+  }
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px; top: 46px; bottom: 0;
+    width: 1px;
+    background: var(--gray-3);
+  }
+  .step-num {
+    width: 30px; height: 30px;
+    border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.78rem;
+    color: var(--white); background: var(--blue);
+    position: relative; z-index: 1;
+  }
+  .step-num.s2 { background: var(--green); }
+  .step-num.s3 { background: var(--yellow); color: var(--black); }
+
+  .step-title { font-weight: 500; font-size: 0.9rem; color: var(--black); margin-bottom: 2px; }
+  .step-desc  { font-size: 0.78rem; color: var(--gray-6); line-height: 1.5; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    height: var(--btm-h);
+    background: var(--white);
+    border-top: 1px solid var(--gray-3);
+    display: flex;
+    padding: 0 0 env(safe-area-inset-bottom);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px; cursor: pointer;
+    color: var(--gray-5);
+    font-size: 0.68rem; font-weight: 500;
+    transition: color 0.15s;
+    padding: 6px 4px;
+    border-radius: var(--radius);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-item.active { color: var(--blue); }
+  .nav-item svg {
+    width: 22px; height: 22px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .nav-item.active svg { stroke: var(--blue); }
+  .nav-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">G<span class="logo-accent">-</span>Lens</div>
+  <div class="navbar-spacer"></div>
+   <div class="nav-auth">
+    <button class="btn-login">登入</button>
+    <button class="btn-register">註冊</button>
+  </div>
+  <div class="lang-btn">
+    <span class="active">繁中</span>
+    <span>EN</span>
+  </div>
+ 
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    
+
+    <!-- 直接使用 S__17899524.jpg 圖片 -->
+    <div class="hero-illus">
+      <img src="S__17899524.jpg" alt="AI 機器人手持合約與放大鏡">
+    </div>
+
+    <h1 class="hero-title">G-Lens<br><span>租約風險辨識</span></h1>
+    <p class="hero-sub">簽約前照一下，守護您的租屋權益！<br>AI 即時分析，法規條款一目瞭然。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- UPLOAD -->
+  <section class="section">
+    <div class="sec-eyebrow">開始分析</div>
+    <div class="sec-title">上傳您的租賃契約</div>
+
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </div>
+      <p class="upload-title">請上傳或拍攝您的租賃契約</p>
+      <p class="upload-hint">支援多頁照片或 PDF</p>
+      <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+        📷 立即上傳 / 拍攝
+      </button>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" capture="camera" hidden
+        onchange="handleFile(this)">
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- RISK DEMO -->
+  <section class="section">
+    <div class="sec-eyebrow">分析結果示例</div>
+    <div class="sec-title">條款風險評估報告</div>
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <span class="dot"></span>
+        已完成辨識 · 3 項條款待確認
+      </div>
+      <div class="risk-row">
+        <span class="risk-clause">第5條：租金得隨時調漲，租客不得異議</span>
+        <span class="risk-badge badge-red">疑似違規</span>
+      </div>
+      <div class="risk-row">
+        <span class="risk-clause">第9條：修繕費用一律由承租人負擔</span>
+        <span class="risk-badge badge-yellow">需進一步確認</span>
+      </div>
+      <div class="risk-row">
+        <span class="risk-clause">第2條：租期一年，到期前三個月通知</span>
+        <span class="risk-badge badge-green">未發現疑義</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="sec-eyebrow">系統特色</div>
+    <div class="sec-title">三大核心防護機制</div>
+    <div class="feat-list">
+      <div class="feat-item">
+        <div class="feat-icon fi-blue">🔒</div>
+        <div class="feat-text">
+          <div class="feat-title">隱私去識別化</div>
+          <div class="feat-desc">送出前自動遮蔽姓名、身份證字號、電話等個資，保護您的隱私安全。</div>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon fi-yellow">⚖️</div>
+        <div class="feat-text">
+          <div class="feat-title">內政部條款比對</div>
+          <div class="feat-desc">對照《住宅租賃定型化契約應記載及不得記載事項》，合規檢視有所依據。</div>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon fi-green">🌐</div>
+        <div class="feat-text">
+          <div class="feat-title">中英雙語對照</div>
+          <div class="feat-desc">同步產出英文輔助說明，外籍留學生也能輕鬆理解中文租約內容。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <div class="sec-eyebrow">使用流程</div>
+    <div class="sec-title">三步驟完成風險辨識</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">拍照或上傳契約</div>
+          <div class="step-desc">支援手機直接拍攝多頁租賃契約，或上傳已有的 PDF 檔案。</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num s2">2</div>
+        <div>
+          <div class="step-title">AI 自動辨識分析</div>
+          <div class="step-desc">系統自動 OCR 辨識、個資去識別化，並由 AI 比對法規條款風險。</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num s3">3</div>
+        <div>
+          <div class="step-title">取得風險評估報告</div>
+          <div class="step-desc">依風險等級標示每條條款，附上白話說明與參考依據，協助您安心簽約。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="setNav(this)">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>首頁</span>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-item" onclick="setNav(this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>歷史紀錄</span>
+  </div>
+  <div class="nav-item" onclick="setNav(this)">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>個人設定</span>
+  </div>
+</nav>
+
+<script>
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    const d = n.querySelector('.nav-dot');
+    if (d) d.remove();
+  });
+  el.classList.add('active');
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot';
+  el.appendChild(dot);
+}
+
+function handleFile(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const zone = document.querySelector('.upload-zone');
+  zone.style.borderColor = '#34a853';
+  zone.style.background = '#e6f4ea';
+  zone.querySelector('.upload-title').textContent = '✓ ' + file.name.substring(0, 22) + (file.name.length > 22 ? '…' : '');
+  zone.querySelector('.upload-hint').textContent = '正在處理中，請稍候…';
+  const btn = zone.querySelector('.btn-primary');
+  btn.textContent = '⏳ 分析中…';
+  btn.style.background = '#34a853';
+}
+
+document.querySelector('.lang-btn').addEventListener('click', e => {
+  if (e.target.tagName === 'SPAN') {
+    e.currentTarget.querySelectorAll('span').forEach(s => s.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+</script>
+</body>
+</html>
